@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1>Techmonium Ticketing</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                    <li><a href="{{ url_for('create_ticket') }}">Create Ticket</a></li>
+                    <li><a href="{{ url_for('view_tickets') }}">View Tickets</a></li>
+                    {% if session.get('user_role') == 'admin' %}
+                        <li><a href="{{ url_for('admin_panel') }}">Admin Panel</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <h1>Tickets</h1>
+        <ul class="tickets">
+            {% for ticket in tickets %}
+                <li>
+                    <h2>{{ ticket.title }}</h2>
+                    <p>{{ ticket.description }}</p>
+                    <p>Status: {{ ticket.status }}</p>
+                    <p>Created by: {{ ticket.created_by }}</p>
+                    <p>Assigned to: {{ ticket.assigned_to }}</p>
+                    {% if session.get('user_role') == 'it_support' %}
+                        <form method="POST" action="{{ url_for('update_ticket', ticket_id=ticket.id) }}">
+                            <select name="status">
+                                <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+                                <option value="assigned" {% if ticket.status == 'assigned' %}selected{% endif %}>Assigned</option>
+                                <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>Closed</option>
+                            </select>
+                            <button type="submit">Update Status</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
